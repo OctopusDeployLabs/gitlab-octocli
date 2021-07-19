@@ -25,9 +25,10 @@ jobs:
       - uses: actions/checkout@v2
       - id: choco
         name: Compare latest version with container
-        run:
+        run: |
           $chocoInformationRaw = choco info octopustools --limitoutput
           Write-Host "It is $chocoInformationRaw"
+        shell: powershell
           
           
           
