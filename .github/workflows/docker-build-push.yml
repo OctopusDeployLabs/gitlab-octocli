@@ -7,8 +7,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  schedule:
+    - cron: '0 5 * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -113,25 +113,30 @@ jobs:
           docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
           docker push octopuslabs/gitlab-octocli:latest-ubuntu.2004
         if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
-        
-  build-windows:
-    needs: [get_octo_cli_version]
-    runs-on: windows-latest
-    
+
+  build-docker-manifest:
+    needs: [build-linux, get_octo_cli_version]
+    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Dockerhub Login
-      env:
-        USERNAME: ${{ secrets.DOCKER_HUB_USER }}
-        PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
-        
-      run: docker login --username ${env:USERNAME} --password "${env:PASSWORD}"
-      
-    - name: Build Windows docker image
-      env:
-        VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
-      run: docker build ./windows-2019 --tag octopuslabs/gitlab-octocli:${env:VERSION_NUMBER}-windows.2019 --tag octopuslabs/gitlab-octocli:latest-windows.2019
-      
-      
-      
+      - name: Docker hub login
+        env:
+          USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+          PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+        run: docker login --username $USERNAME --password "$PASSWORD"
+
+      - name: Build manifests
+        env:
+          VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
+        run: |
+          docker manifest create octopuslabs/gitlab-octocli:latest octopuslabs/gitlab-octocli:latest-ubuntu.2004
+          docker manifest create octopuslabs/gitlab-octocli:$VERSION_NUMBER octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
+        if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes'}}
+
+      - name: Push manifests
+        env:
+          VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
+        run: |
+          docker manifest push octopuslabs/gitlab-octocli:latest
+          docker manifest push octopuslabs/gitlab-octocli:$VERSION_NUMBER
+        if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes'}}
