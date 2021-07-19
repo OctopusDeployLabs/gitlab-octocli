@@ -27,6 +27,8 @@ jobs:
         name: Compare latest version with container
         run:
           $chocoInformationRaw = choco info octopustools --limitoutput
+          $chocoInformationRaw
+          <#
           $version = ($chocoInformationRaw.Split("|"))[1]
           $versionSplit = $version.Split(".")
           
@@ -61,6 +63,7 @@ jobs:
               echo "::set-output name=CONTINUE::Yes"
             }
           }
+          #>
           
   # This workflow contains a single job called "build"
   build:
