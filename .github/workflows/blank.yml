@@ -55,7 +55,7 @@ jobs:
           }
           else
           {
-            if (response.StatusCode.value__ -eq 404)
+            if ($response.StatusCode.value__ -eq 404)
             {
               Write-Host "No tags exist for repo, assuming first build."
               echo "::set-output name=CONTINUE::Yes"
