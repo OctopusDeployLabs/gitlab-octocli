@@ -113,3 +113,25 @@ jobs:
           docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
           docker push octopuslabs/gitlab-octocli:latest-ubuntu.2004
         if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
+        
+  build-windows:
+    needs: [get_octo_cli_version]
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Dockerhub Login
+      env:
+        USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+        PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+        
+      run: docker login --username ${env:USERNAME} --password "${env:PASSWORD}"
+      
+    - name: Build Windows docker image
+      env:
+        VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
+      run: docker build ./windows-2019 --tag octopuslabs/gitlab-octocli:${env:VERSION_NUMBER}-windows.2019 --tag octopuslabs/gitlab-octocli:latest-windows.2019
+      
+      
+      
