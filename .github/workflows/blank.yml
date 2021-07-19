@@ -28,42 +28,8 @@ jobs:
         run:
           $chocoInformationRaw = choco info octopustools --limitoutput
           $chocoInformationRaw
-          <#
-          $version = ($chocoInformationRaw.Split("|"))[1]
-          $versionSplit = $version.Split(".")
           
-          $response = try {
-            $repositoryTags = Invoke-RestMethod "https://registry.hub.docker.com/v1/repositories/octopuslabs/gitlab-octocli/tags"
-          } catch [System.Net.WebException] { 
-            $_.Exception.Response 
-          }
           
-          echo "::set-output name=VERSION::$version"
-          
-          if ($null -eq $response)
-          {
-            $matchingTag = $repositoryTags | Where-Object {$_.Name -eq $version}
-            
-            if ($null -ne $matchingTag)
-            {
-              Write-Host "Docker container already has latest version."
-              echo "::set-output name=Continue::No"
-            }
-            else
-            {
-              Write-Host "Octopus CLI has been updated, create new image."
-              echo "::set-output name=Continue::Yes"
-            }
-          }
-          else
-          {
-            if (response.StatusCode.value__ -eq 404)
-            {
-              Write-Host "No tags exist for repo, assuming first build."
-              echo "::set-output name=CONTINUE::Yes"
-            }
-          }
-          #>
           
   # This workflow contains a single job called "build"
   build:
