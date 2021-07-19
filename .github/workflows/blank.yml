@@ -27,7 +27,7 @@ jobs:
         name: Compare latest version with container
         run:
           $chocoInformationRaw = choco info octopustools --limitoutput
-          $chocoInformationRaw
+          Write-Host "It is $chocoInformationRaw"
           
           
           
