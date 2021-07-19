@@ -67,7 +67,9 @@ jobs:
           
           
   # This workflow contains a single job called "build"
-  build:
+  build-linux:
+    # define needs
+    needs: [get_octo_cli_version]
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -76,12 +78,38 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # Login to docker
+      - name: Docker Hub login
+        env:
+          USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+          PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+        run: docker login --username $USERNAME --password "$PASSWORD"
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      # Build ubuntu images
+      - name: Build the docker 1804 image
+        env: 
+          VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
+        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
+        
+      - name: Push the 1804 image
+        env:
+          VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804
+          docker push octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
+        
+      - name: Build the docker 2004 image
+        env:
+          VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
+        run: docker build ./ubuntu-2004 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004 --tag octopuslabs/gitlab-octocli:latest-ubuntu.2004
+        if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
+        
+      - name: Push the 2004 image
+        env:
+          VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
+        run: |
+          docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
+          docker push octopuslabs/gitlab-octocli:latest-ubuntu.2004
+        if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
