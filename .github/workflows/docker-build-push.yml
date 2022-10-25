@@ -58,7 +58,8 @@ jobs:
             {
               Write-Host "Octopus CLI has been updated, create new image."
               #echo "::set-output name=Continue::Yes"
-              echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+              #echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+              echo "CONTINUE=No" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             }
           }
           else
