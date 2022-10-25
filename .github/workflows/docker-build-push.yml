@@ -48,13 +48,13 @@ jobs:
             {
               Write-Host "Docker container already has latest version."
               #echo "::set-output name=Continue::No"
-              echo "Continue=No" >> $GITHUB_ENV
+              echo "CONTINUE=No" >> $GITHUB_ENV
             }
             else
             {
               Write-Host "Octopus CLI has been updated, create new image."
               #echo "::set-output name=Continue::Yes"
-              echo "Continue=Yes" >> $GITHUB_ENV
+              echo "CONTINUE=Yes" >> $GITHUB_ENV
             }
           }
           else
