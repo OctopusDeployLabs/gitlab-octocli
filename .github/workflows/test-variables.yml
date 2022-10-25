@@ -61,13 +61,14 @@ jobs:
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: |
              echo "The version is: $VERSION"
-             echo "TESTVAR=Shawn" >> $GIBHUB_ENV
+             echo "PACKAGE_VERSION=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
   test-env:
+    needs: [build-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Test again
         run: |
              echo "The version is: $VERSION"
-             echo "TestVar is: $TESTVAR"
+             echo "Package Version is: $PACKAGE_VERSION"
 
