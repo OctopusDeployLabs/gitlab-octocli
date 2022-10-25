@@ -93,7 +93,6 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: |
-             env
              docker login --username $USERNAME --password "$PASSWORD"
 
       # Build ubuntu images
@@ -101,7 +100,7 @@ jobs:
         env: 
           VERSION_NUMBER: ${{ env.VERSION }}
         run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
-        if: ${{ env.CONTINUE == 'Yes' }}
+        if: ${{ env.CONTINUE }} == 'Yes'
         
       - name: Push the 1804 image
         env:
@@ -109,13 +108,13 @@ jobs:
         run: |
           docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804
           docker push octopuslabs/gitlab-octocli:latest-ubuntu.1804
-        if: ${{ env.CONTINUE == 'Yes' }}
+        if: ${{ env.CONTINUE }} == 'Yes'
         
       - name: Build the docker 2004 image
         env:
           VERSION_NUMBER: ${{ env.VERSION }}
         run: docker build ./ubuntu-2004 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004 --tag octopuslabs/gitlab-octocli:latest-ubuntu.2004
-        if: ${{ env.CONTINUE == 'Yes' }}
+        if: ${{ env.CONTINUE }} == 'Yes'
         
       - name: Push the 2004 image
         env:
@@ -123,7 +122,7 @@ jobs:
         run: |
           docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
           docker push octopuslabs/gitlab-octocli:latest-ubuntu.2004
-        if: ${{ env.CONTINUE == 'Yes' }}
+        if: ${{ env.CONTINUE }} == 'Yes'
 
   build-docker-manifest:
     needs: [build-linux, get_octo_cli_version]
@@ -142,7 +141,7 @@ jobs:
         run: |
           docker manifest create octopuslabs/gitlab-octocli:latest octopuslabs/gitlab-octocli:latest-ubuntu.2004
           docker manifest create octopuslabs/gitlab-octocli:$VERSION_NUMBER octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
-        if: ${{ env.CONTINUE == 'Yes'}}
+        if: ${{ env.CONTINUE }} == 'Yes'
 
       - name: Push manifests
         env:
@@ -150,4 +149,4 @@ jobs:
         run: |
           docker manifest push octopuslabs/gitlab-octocli:latest
           docker manifest push octopuslabs/gitlab-octocli:$VERSION_NUMBER
-        if: ${{ env.CONTINUE == 'Yes'}}
+        if: ${{ env.CONTINUE }} == 'Yes'
