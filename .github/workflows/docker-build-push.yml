@@ -92,7 +92,9 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
-        run: docker login --username $USERNAME --password "$PASSWORD"
+        run: |
+             env
+             docker login --username $USERNAME --password "$PASSWORD"
 
       # Build ubuntu images
       - name: Build the docker 1804 image
