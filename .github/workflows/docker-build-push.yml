@@ -40,9 +40,9 @@ jobs:
             Write-Host "Retrieval failed!!"
           }
           
-          echo "::set-output name=VERSION::$version"
+          #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
-          #echo "VERSION=$version" >> $env:GITHUB_ENV
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
           
           if ($null -eq $response)
           {
@@ -51,15 +51,15 @@ jobs:
             if ($null -ne $matchingTag)
             {
               Write-Host "Docker container already has latest version."
-              echo "::set-output name=Continue::No"
-              #echo "CONTINUE=No" >> $env:GITHUB_ENV
+              #echo "::set-output name=Continue::No"
+              echo "CONTINUE=No" >> $env:GITHUB_OUTPUT
             }
             else
             {
               Write-Host "Octopus CLI has been updated, create new image."
-              echo "::set-output name=Continue::Yes"
+              #echo "::set-output name=Continue::Yes"
               #echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-              #echo "CONTINUE=Yes" >> $env:GITHUB_ENV
+              echo "CONTINUE=Yes" >> $env:GITHUB_OUTPUT
             }
           }
           else
@@ -67,8 +67,8 @@ jobs:
             if ($response.StatusCode.value__ -eq 404)
             {
               Write-Host "No tags exist for repo, assuming first build."
-              echo "::set-output name=CONTINUE::Yes"
-              #echo "CONTINUE=Yes" >> $env:GITHUB_ENV
+              #echo "::set-output name=CONTINUE::Yes"
+              echo "CONTINUE=Yes" >> $env:GITHUB_OUTPUT
             }
           }
           
