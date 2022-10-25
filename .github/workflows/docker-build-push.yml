@@ -33,11 +33,11 @@ jobs:
           Write-Host "Retrieving tags ..."
           
           $response = try {
-            $repositoryTags = Invoke-RestMethod "https://registry.hub.docker.com/v1/repositories/octopuslabs/gitlab-octocli/tags"
+            $repositoryTags = Invoke-RestMethod "https://registry.hub.docker.com/v2/repositories/octopuslabs/gitlab-octocli/tags"
             Write-Host "Retrieval successful!"
           } catch [System.Net.WebException] { 
             $_.Exception.Response 
-            Write-Host "Retreival failed!!"
+            Write-Host "Retrieval failed!!"
           }
           
           #echo "::set-output name=VERSION::$version"
