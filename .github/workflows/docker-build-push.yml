@@ -98,7 +98,9 @@ jobs:
       - name: Build the docker 1804 image
         env: 
           VERSION_NUMBER: ${{ env.VERSION }}
-        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        run: |
+             env
+             docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
         if: ${{ env.CONTINUE == 'Yes' }}
         
       - name: Push the 1804 image
