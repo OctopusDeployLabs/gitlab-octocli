@@ -100,7 +100,7 @@ jobs:
       - name: Build the docker 1804 image
         env: 
           VERSION_NUMBER: ${{ needs.get_octo_cli_version.outputs.VERSION }}
-        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
         if: ${{ needs.get_octo_cli_version.outputs.CONTINUE == 'Yes' }}
         
       - name: Push the 1804 image
