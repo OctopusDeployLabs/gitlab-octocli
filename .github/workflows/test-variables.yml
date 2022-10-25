@@ -1,0 +1,73 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Docker Image for GitLab
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  
+  get_octo_cli_version:
+    runs-on: windows-latest
+    outputs: 
+      VERSION: ${{ steps.choco.outputs.VERSION }}
+      CONTINUE: ${{ steps.choco.outputs.CONTINUE }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: choco
+        name: Compare latest version with container
+        run: |
+          $chocoInformationRaw = choco info octopustools --limitoutput
+          $version = ($chocoInformationRaw.Split("|"))[1]
+          $versionSplit = $version.Split(".")
+          
+          Write-Host "Retrieving tags ..."
+          
+          $response = try {
+            $repositoryTags = Invoke-RestMethod "https://registry.hub.docker.com/v2/repositories/octopuslabs/gitlab-octocli/tags"
+            Write-Host "Retrieval successful!"
+          } catch [System.Net.WebException] { 
+            $_.Exception.Response 
+            Write-Host "Retrieval failed!!"
+          }
+          
+          #echo "::set-output name=VERSION::$version"
+          Write-Host "Version: $version"
+          Write-Host "VERSION=$version" >> $env:GITHUB_ENV
+          
+        shell: powershell
+          
+          
+          
+  # This workflow contains a single job called "build"
+  build-linux:
+    # define needs
+    needs: [get_octo_cli_version]
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Login to docker
+      - name: Docker Hub login
+        env:
+          USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+          PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+        run: |
+             echo "The version is: $VERSION"
+             echo "TESTVAR=Shawn" >> $GIBHUB_ENV
+
+  test-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test again
+        run: |
+             echo "The version is: $VERSION"
+             echo "TestVar is: $TESTVAR"
+
