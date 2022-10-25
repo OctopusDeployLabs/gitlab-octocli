@@ -42,7 +42,7 @@ jobs:
           
           #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
-          echo "VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PACKAGE_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           
           if ($null -eq $response)
           {
@@ -99,7 +99,7 @@ jobs:
       - name: Build the docker 1804 image
         env: 
           VERSION_NUMBER: ${{ env.VERSION }}
-        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:${{ env.VERSION }}-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$PACKAGE_VERSION-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
         if: ${{ env.CONTINUE }} == 'Yes'
         
       - name: Push the 1804 image
