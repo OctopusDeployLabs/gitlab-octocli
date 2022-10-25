@@ -42,7 +42,7 @@ jobs:
           
           #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
-          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           
           if ($null -eq $response)
           {
@@ -52,13 +52,13 @@ jobs:
             {
               Write-Host "Docker container already has latest version."
               #echo "::set-output name=Continue::No"
-              echo "CONTINUE=No" >> $GITHUB_ENV
+              echo "CONTINUE=No" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             }
             else
             {
               Write-Host "Octopus CLI has been updated, create new image."
               #echo "::set-output name=Continue::Yes"
-              echo "CONTINUE=Yes" >> $GITHUB_ENV
+              echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             }
           }
           else
@@ -67,7 +67,7 @@ jobs:
             {
               Write-Host "No tags exist for repo, assuming first build."
               #echo "::set-output name=CONTINUE::Yes"
-              echo "CONTINUE=Yes" >> $GITHUB_ENV
+              echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             }
           }
           
@@ -92,9 +92,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
-        run: |
-             docker login --username $USERNAME --password "$PASSWORD"
-             env
+        run: docker login --username $USERNAME --password "$PASSWORD"
 
       # Build ubuntu images
       - name: Build the docker 1804 image
