@@ -36,7 +36,7 @@ jobs:
           
           #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
-          Write-Host "VERSION=$version" >> $env:GITHUB_ENV
+          Write-Host "VERSION=$version" >> $env:GITHUB_OUTPUT
           
         shell: powershell
           
@@ -60,7 +60,7 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: |
-             echo "The version is: $VERSION"
+             echo "The version is: ${{ needs.get_octo_cli_version.outputs.VERSION }}"
              echo "PACKAGE_VERSION=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
   test-env:
