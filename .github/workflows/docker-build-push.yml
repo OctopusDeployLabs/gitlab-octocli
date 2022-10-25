@@ -42,7 +42,7 @@ jobs:
           
           #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
-          echo "PACKAGE_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          echo "VERSION=$version" >> $env:GITHUB_ENV
           
           if ($null -eq $response)
           {
@@ -52,14 +52,14 @@ jobs:
             {
               Write-Host "Docker container already has latest version."
               #echo "::set-output name=Continue::No"
-              echo "CONTINUE=No" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+              echo "CONTINUE=No" >> $env:GITHUB_ENV
             }
             else
             {
               Write-Host "Octopus CLI has been updated, create new image."
               #echo "::set-output name=Continue::Yes"
               #echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-              "CONTINUE=No" >> $env:GITHUB_ENV
+              echo "CONTINUE=Yes" >> $env:GITHUB_ENV
             }
           }
           else
@@ -68,7 +68,7 @@ jobs:
             {
               Write-Host "No tags exist for repo, assuming first build."
               #echo "::set-output name=CONTINUE::Yes"
-              echo "CONTINUE=Yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+              echo "CONTINUE=Yes" >> $env:GITHUB_ENV
             }
           }
           
@@ -100,8 +100,8 @@ jobs:
       - name: Build the docker 1804 image
         env: 
           VERSION_NUMBER: ${{ env.VERSION }}
-        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:${{ env.PACKAGE_VERSION }}-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
-        if: ${{ env.CONTINUE }} == 'Yes'
+        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        if: ${{ env.CONTINUE == 'Yes' }}
         
       - name: Push the 1804 image
         env:
@@ -109,13 +109,13 @@ jobs:
         run: |
           docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804
           docker push octopuslabs/gitlab-octocli:latest-ubuntu.1804
-        if: ${{ env.CONTINUE }} == 'Yes'
+        if: ${{ env.CONTINUE == 'Yes' }}
         
       - name: Build the docker 2004 image
         env:
           VERSION_NUMBER: ${{ env.VERSION }}
         run: docker build ./ubuntu-2004 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004 --tag octopuslabs/gitlab-octocli:latest-ubuntu.2004
-        if: ${{ env.CONTINUE }} == 'Yes'
+        if: ${{ env.CONTINUE == 'Yes' }}
         
       - name: Push the 2004 image
         env:
@@ -123,7 +123,7 @@ jobs:
         run: |
           docker push octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
           docker push octopuslabs/gitlab-octocli:latest-ubuntu.2004
-        if: ${{ env.CONTINUE }} == 'Yes'
+        if: ${{ env.CONTINUE == 'Yes' }}
 
   build-docker-manifest:
     needs: [build-linux, get_octo_cli_version]
@@ -142,7 +142,7 @@ jobs:
         run: |
           docker manifest create octopuslabs/gitlab-octocli:latest octopuslabs/gitlab-octocli:latest-ubuntu.2004
           docker manifest create octopuslabs/gitlab-octocli:$VERSION_NUMBER octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.2004
-        if: ${{ env.CONTINUE }} == 'Yes'
+        if: ${{ env.CONTINUE == 'Yes' }}
 
       - name: Push manifests
         env:
@@ -150,4 +150,4 @@ jobs:
         run: |
           docker manifest push octopuslabs/gitlab-octocli:latest
           docker manifest push octopuslabs/gitlab-octocli:$VERSION_NUMBER
-        if: ${{ env.CONTINUE }} == 'Yes'
+        if: ${{ env.CONTINUE == 'Yes' }}
