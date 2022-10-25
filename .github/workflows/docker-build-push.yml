@@ -92,15 +92,15 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
-        run: docker login --username $USERNAME --password "$PASSWORD"
+        run: |
+             docker login --username $USERNAME --password "$PASSWORD"
+             env
 
       # Build ubuntu images
       - name: Build the docker 1804 image
         env: 
           VERSION_NUMBER: ${{ env.VERSION }}
-        run: |
-             env
-             docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
+        run: docker build ./ubuntu-1804 --tag octopuslabs/gitlab-octocli:$VERSION_NUMBER-ubuntu.1804 --tag octopuslabs/gitlab-octocli:latest-ubuntu.1804
         if: ${{ env.CONTINUE == 'Yes' }}
         
       - name: Push the 1804 image
