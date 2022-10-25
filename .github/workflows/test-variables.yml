@@ -36,7 +36,7 @@ jobs:
           
           #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
-          Write-Host "VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT 
           
         shell: powershell
           
