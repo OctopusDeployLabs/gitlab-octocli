@@ -22,7 +22,7 @@ jobs:
       VERSION: ${{ steps.choco.outputs.VERSION }}
       CONTINUE: ${{ steps.choco.outputs.CONTINUE }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - id: choco
         name: Compare latest version with container
         run: |
@@ -86,7 +86,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Login to docker
       - name: Docker Hub login
