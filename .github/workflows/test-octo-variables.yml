@@ -1,13 +1,8 @@
-# This is a basic workflow to help you get started with Actions
+name: octo - testing environment variables
 
-name: Testing environment variables
-
-# Controls when the workflow will run
 on:
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   
   get_octo_cli_version:
@@ -39,8 +34,6 @@ jobs:
           echo "VERSION=$version" >> $env:GITHUB_OUTPUT 
           
         shell: powershell
-          
-          
           
   # This workflow contains a single job called "build"
   build-linux:

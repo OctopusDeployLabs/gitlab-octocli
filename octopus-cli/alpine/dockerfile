@@ -1,0 +1,9 @@
+FROM golang:alpine
+
+ARG OCTOPUS_CLI_VERSION=1.3.0
+
+RUN apk update && apk upgrade && apk add --no-cache bash curl
+
+RUN curl -L https://github.com/OctopusDeploy/cli/raw/main/scripts/install.sh | VERSION=v${OCTOPUS_CLI_VERSION} bash
+
+ENTRYPOINT [""]
