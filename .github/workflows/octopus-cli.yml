@@ -36,7 +36,7 @@ jobs:
           
           if ($null -eq $response)
           {
-            $matchingTag = $repositoryTags | Where-Object {$_.Name -eq $version}
+            $matchingTag = $repositoryTags.results | Where-Object {$_.Name -eq $version}
             
             if ($null -ne $matchingTag)
             {

@@ -34,7 +34,7 @@ jobs:
 
           if ($null -eq $response)
           {
-            $matchingTag = $repositoryTags | Where-Object {$_.Name -eq $version}
+            $matchingTag = $repositoryTags.results | Where-Object {$_.Name -eq $version}
             
             if ($null -ne $matchingTag)
             {
@@ -70,8 +70,8 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: |
-             echo "The version is: ${{ needs.get_octo_cli_version.outputs.VERSION }}"
-             echo "The continue value is: ${{ needs.get_octo_cli_version.outputs.CONTINUE }}"
+             echo "The version is: ${{ needs.get-octopus-cli-version.outputs.VERSION }}"
+             echo "The continue value is: ${{ needs.get-octopus-cli-version.outputs.CONTINUE }}"
              echo "PACKAGE_VERSION=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
 
