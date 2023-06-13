@@ -1,11 +1,11 @@
-name: octo - test environment variables
+name: octopus-cli - test environment variables
 
 on:
   workflow_dispatch:
 
 jobs:
   
-  get_octo_cli_version:
+  get-octopus-cli-version:
     runs-on: windows-latest
     outputs: 
       VERSION: ${{ steps.choco.outputs.VERSION }}
@@ -15,53 +15,63 @@ jobs:
       - id: choco
         name: Compare latest version with container
         run: |
-          $chocoInformationRaw = choco info octopustools --limitoutput
+          $chocoInformationRaw = choco info octopus-cli --limitoutput
           $version = ($chocoInformationRaw.Split("|"))[1]
           $versionSplit = $version.Split(".")
           
           Write-Host "Retrieving tags ..."
           
           $response = try {
-            $repositoryTags = Invoke-RestMethod "https://registry.hub.docker.com/v2/repositories/octopuslabs/gitlab-octocli/tags"
+            $repositoryTags = Invoke-RestMethod "https://registry.hub.docker.com/v2/repositories/octopuslabs/gitlab-octopus-cli/tags"
             Write-Host "Retrieval successful!"
           } catch [System.Net.WebException] { 
             $_.Exception.Response 
             Write-Host "Retrieval failed!!"
           }
           
-          #echo "::set-output name=VERSION::$version"
           Write-Host "Version: $version"
           echo "VERSION=$version" >> $env:GITHUB_OUTPUT 
+
+          if ($null -eq $response)
+          {
+            $matchingTag = $repositoryTags | Where-Object {$_.Name -eq $version}
+            
+            if ($null -ne $matchingTag)
+            {
+              Write-Host "Docker container already has latest version."
+              echo "CONTINUE=No" >> $env:GITHUB_OUTPUT
+            }
+            else
+            {
+              Write-Host "vNext Octopus CLI has been updated, create new image."
+              echo "CONTINUE=Yes" >> $env:GITHUB_OUTPUT
+            }
+          }
+          else
+          {
+            if ($response.StatusCode.value__ -eq 404)
+            {
+              Write-Host "No tags exist for repo, assuming first build."
+              echo "CONTINUE=Yes" >> $env:GITHUB_OUTPUT
+            }
+          }
           
         shell: powershell
           
-  # This workflow contains a single job called "build"
   build-linux:
-    # define needs
-    needs: [get_octo_cli_version]
-    # The type of runner that the job will run on
+    needs: [get-octopus-cli-version]
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Login to docker
       - name: Docker Hub login
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: |
              echo "The version is: ${{ needs.get_octo_cli_version.outputs.VERSION }}"
+             echo "The continue value is: ${{ needs.get_octo_cli_version.outputs.CONTINUE }}"
              echo "PACKAGE_VERSION=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
-  test-env:
-    needs: [build-linux]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test again
-        run: |
-             echo "The version is: $VERSION"
-             echo "Package Version is: $PACKAGE_VERSION"
 
