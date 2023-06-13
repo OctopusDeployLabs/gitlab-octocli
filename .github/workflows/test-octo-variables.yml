@@ -5,7 +5,7 @@ on:
 
 jobs:
   
-  get_octo_cli_version:
+  get-octopus-cli-version:
     runs-on: windows-latest
     outputs: 
       VERSION: ${{ steps.choco.outputs.VERSION }}
