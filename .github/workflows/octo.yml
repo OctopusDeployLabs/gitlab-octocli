@@ -86,8 +86,8 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
-        run: |
-             docker login --username $USERNAME --password "$PASSWORD"
+        run: docker login --username $USERNAME --password "$PASSWORD"
+        if: ${{ needs.get-octo-cli-version.outputs.CONTINUE == 'Yes' }}             
 
       - name: Build the alpine docker image
         env: 
@@ -113,7 +113,8 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: docker login --username $USERNAME --password "$PASSWORD"
-
+        if: ${{ needs.get-octo-cli-version.outputs.CONTINUE == 'Yes' }}
+        
       - name: Build manifests
         env:
           VERSION_NUMBER: ${{ needs.get-octo-cli-version.outputs.VERSION }}

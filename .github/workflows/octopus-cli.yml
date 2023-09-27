@@ -84,8 +84,8 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
-        run: |
-             docker login --username $USERNAME --password "$PASSWORD"
+        run: docker login --username $USERNAME --password "$PASSWORD"
+        if: ${{ needs.get-octopus-cli-version.outputs.CONTINUE == 'Yes' }}
 
       # Build ubuntu images
       - name: Build the alpine docker image
@@ -112,6 +112,7 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_HUB_USER }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
         run: docker login --username $USERNAME --password "$PASSWORD"
+        if: ${{ needs.get-octopus-cli-version.outputs.CONTINUE == 'Yes' }}
 
       - name: Build manifests
         env:
